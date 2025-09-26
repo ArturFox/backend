@@ -27,7 +27,7 @@ export default function RootLayout({
           <HeaderM />
 
           <main>
-            {children}
+            {children }
           </main> 
 
           <Toaster
