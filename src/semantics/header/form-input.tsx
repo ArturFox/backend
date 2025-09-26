@@ -9,24 +9,17 @@ interface Props extends React.InputHTMLAttributes<HTMLElement>{
     required?: boolean;
 }
 
-const passwordRules = [
-  "Минимум 8 символов",
-  "Хотя бы одна заглавная буква (A–Z)",
-  "Хотя бы одна строчная буква (a–z)",
-  "Хотя бы одна цифра (0–9)",
-  "Хотя бы один спецсимвол (!@#$%^&*())",
-  "Только английские буквы и разрешённые символы",
-];
 
 export const FormInputM = ({name, label, required, ...props}: Props) => {
 
     const {register, watch, setValue, formState: {errors, isSubmitted}} = useFormContext();
 
-    const text = watch(name);
+    const text = watch(name) || "";
+    
 
     const errorText = errors?.[name]?.message as string;
 
-    const e = required && isSubmitted && !text;
+    const e = required && isSubmitted && !text.trim();
 
     const onClickClear = () => {
         setValue(name, '', {shouldValidate: true});
@@ -37,24 +30,27 @@ export const FormInputM = ({name, label, required, ...props}: Props) => {
 
             {label && (
                 <p>
-                    {label} {e && <span>*</span>}
+                    {label} {e && <span className="text-red-500">*</span>}
                 </p>
             )}
 
-            <div>
-                <Input {...register(name)} {...props}/>
-                {Boolean(text) && <button onClick={() => onClickClear()}>x</button>}
+            <div className="relative w-full">
+                <Input 
+                    {...register(name)} 
+                    {...props} 
+                    className="pr-8" 
+                />
+                {Boolean(text) && 
+                    <button 
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" 
+                        onClick={() => onClickClear()}
+                    >
+                        x
+                    </button>
+                }
             </div>
 
-            {name === "password" && (
-                <ul className="text-xs text-gray-500 mt-1">
-                    {passwordRules.map((rule, i) => (
-                        <li key={i}>• {rule}</li>
-                    ))}
-                </ul>
-            )}
-
-            {errorText && <p>{errorText}</p>}
+            {errorText && <p className="text-red-500 text-sm mt-1">{errorText}</p>}
         </div>
     )
 }

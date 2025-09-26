@@ -60,7 +60,12 @@ const config: Config = {
   		}
   	}
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+	require("tailwindcss-animate"),
+	require("@tailwindcss/line-clamp"),
+	require('@tailwindcss/aspect-ratio'),
+	require('@tailwindcss/typography'),
+],
 }
 
 export default config

@@ -1,4 +1,22 @@
+/*src/services/instance.ts*/
+
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
+
+
+export async function getRequest<T>(url: string): Promise<T> {
+    const response = await fetch(`${BASE_URL}${url}`, {
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+
+    if(!response.ok){
+        throw new Error(await response.text());
+    };
+
+    return response.json();
+};
+
 
 interface FetchOptions extends RequestInit {
   params?: Record<string, string | number>;
@@ -14,6 +32,32 @@ export async function postRequest<T>(url: string, body: any, options: FetchOptio
     },
     body: JSON.stringify(body),
   });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    throw new Error(errorData?.message || "Ошибка запроса");
+  }
+
+  return response.json();
+}
+
+
+
+interface FetchOptions {
+  params?: Record<string, string | number>;
+}
+
+export async function setProducts<T>(url: string, options: FetchOptions = {}): Promise<T> {
+  const { params} = options;
+  const searchParams = new URLSearchParams();
+
+  if (params) {
+    Object.entries(params).forEach(([key, value]) => {
+      searchParams.append(key, String(value));
+    });
+  }
+
+  const response = await fetch(`${BASE_URL}${url}?${searchParams.toString()}`);
 
   if (!response.ok) {
     throw new Error(await response.text());

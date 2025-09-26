@@ -1,51 +1,88 @@
 import React, { useState } from "react";
-import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { LoginM } from "./login";
 import { RegisterM } from "./register";
+import { ForgotPassword } from "./forgot-password";
+import { useAuthContext } from "./auth-context";
 
-interface Props {
-    flagDialog: boolean;
-    setflagDialog: (flagDialog: boolean) => void;
-};
+export const AuthModalM = () => {
 
-export const AuthModalM = ({flagDialog, setflagDialog}: Props) => {
-
-    const [loginORregister, setloginORregister] = useState<'login' | 'register'>('login');
+    const { flagDialog, setflagDialog, currentForm, setCurrentForm } = useAuthContext();
 
     return(
-        <Dialog open={flagDialog} onOpenChange={setflagDialog}>
-            <DialogContent>
+        <Dialog open={flagDialog} onOpenChange={(open) => {
+                    setflagDialog(open); 
+                    if(!open){
+                        setCurrentForm("login");
+                    };
+                }}
+        >
+            <DialogContent className="bg-white flex flex-col gap-4 rounded-2xl p-6 shadow-lg sm:max-w-md">
                 
-                {loginORregister === 'login'
-
-                    ? (<DialogTitle>
-                            <LoginM flagDialog={flagDialog} setflagDialog={setflagDialog}/>
-                        </DialogTitle>
-                    )
-
-                    : (<DialogTitle>
-                            <RegisterM flagDialog={flagDialog} setflagDialog={setflagDialog}/>
-                        </DialogTitle>
-                    )
+                <DialogTitle className="text-center text-xl font-bold">
+                    {
+                        {
+                            login: "Логин",
+                            register: "Создание аккаунта",
+                            forgotPassword: "Востановление пароля",
+                        }[currentForm]
+                    }
+                </DialogTitle>
                     
+                    
+                {
+                    {
+                        login: <LoginM/>,
+                        register: <RegisterM/>,
+                        forgotPassword: <ForgotPassword/>,
+                    }[currentForm]
                 }
+                
+                { currentForm === "login" && (
+                    <div className="flex flex-col gap-4">
+                        <div>
+                            <Button 
+                                className="w-full"
+                                onClick={() => setCurrentForm('forgotPassword')}
+                            >
+                                Забыли пароль
+                            </Button>
+                        </div>
+                        <div>
+                            <Button 
+                                className="w-full"
+                                onClick={() => setCurrentForm('register')}
+                            >
+                                Создать аккаунт
+                            </Button>
+                        </div>
+                    </div>
+                )}
 
-                <div><p>or</p></div>
+                { currentForm === 'forgotPassword' && (
+                    <div>
+                        <Button 
+                            className="w-full"
+                            onClick={() => setCurrentForm('login')}
+                        >
+                            Вернуться назад
+                        </Button>
+                    </div>
+                )}
 
-                <div>
-                    <Button onClick={() => signIn('google', {callbackUrl: '/', redirect: true})} type="button">
-                        Google
-                    </Button>
-                </div>
-
-                <div>
-                    <Button onClick={() => setloginORregister('register')}>
-                        Создать аккаунт 
-                    </Button>
-                </div>
+                { currentForm === "register" && (
+                    
+                    <div>
+                        <Button 
+                            className="w-full"
+                            onClick={() => setCurrentForm('login')}
+                        >
+                            Вернуться назад
+                        </Button>
+                    </div>
+                    
+                )}
 
             </DialogContent>
         </Dialog>

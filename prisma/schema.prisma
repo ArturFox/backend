@@ -3,8 +3,13 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
 }
 
 model User {
@@ -13,16 +18,141 @@ model User {
   fullName  String
   password  String
   verified  Boolean  @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
   verificationCodes VerificationCode[]
+  carts             Cart[]
+  role      UserRole @default(USER)
 }
 
 model VerificationCode {
   id        String   @id @default(cuid())
   code      String
   expiresAt DateTime
+  type      String
   userId    String
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
+}
+
+
+
+
+
+
+
+
+
+enum BookCategory {
+  POPULAR              
+  RUSSIAN_CLASSIC
+}
+
+enum BookTag {
+  BESTSELLER
+  NEW_ARRIVAL
+  EXCLUSIVE
+}
+
+model Book {
+  id          String   @id @default(cuid())
+  title       String
+  author      String
+  description String
+  imageUrl    String
+  price       Int
+
+  genreId     String
+  genre       Genre    @relation(fields: [genreId], references: [id])
+  
+  languageId  String
+  language    Language @relation(fields: [languageId], references: [id])
+
+  formatId    String
+  format      Format   @relation(fields: [formatId], references: [id]) 
+
+  cartItems   CartItem[]
+
+  discount    Discount?
+
+  category        BookCategory
+
+  tag         BookTag
+
+  dynamicCategoryId String?
+  dynamicCategory  DynamicCategory? @relation(fields: [dynamicCategoryId], references: [id])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model DynamicCategory{
+  id          String @id @default(cuid())
+  name        String @unique
+  books       Book[]
+}
+
+model Discount {
+  id        String   @id @default(cuid())
+
+  bookId    String   @unique
+  book      Book     @relation(fields: [bookId], references: [id])
+
+
+  percent   Int      
+  active    Boolean  @default(true)
+  startAt   DateTime?
+  endAt     DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Cart {
+  id          String     @id @default(cuid())
+
+  userId      String?    
+  user        User?      @relation(fields: [userId], references: [id])
+
+  tokenId     String?    
+  totalAmount Int        @default(0) 
+  
+  items       CartItem[]
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @default(now()) @updatedAt
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  quantity  Int      @default(1)
+
+  cartId    String
+  cart      Cart     @relation(fields: [cartId], references: [id])
+
+  bookId    String
+  book      Book     @relation(fields: [bookId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Genre {
+  id    String  @id @default(cuid())
+  name  String  @unique
+  books Book[]
+}
+
+model Language {
+  id    String @id @default(cuid())
+  name  String @unique
+  books Book[]
+}
+
+model Format {
+  id    String @id @default(cuid())
+  name  String @unique
+  books Book[]
 }
