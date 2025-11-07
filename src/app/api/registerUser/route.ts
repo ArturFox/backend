@@ -11,10 +11,26 @@ interface RegisterRequest {
 }
 
 export async function POST(req: NextRequest) {
-  try {
-    const body: RegisterRequest = await req.json();
-    console.log("Получили тело запроса:", body);
+  console.log("Получен метод:", req.method);
 
+  // Логируем сырое тело запроса
+  const rawBody = await req.text();
+  console.log("Raw body:", rawBody);
+
+  let body: RegisterRequest;
+  try {
+    body = JSON.parse(rawBody); // Парсим вручную, чтобы поймать ошибки
+  } catch (err) {
+    console.error("Ошибка парсинга JSON:", err);
+    return NextResponse.json({ message: "Невалидный JSON" }, { status: 400 });
+  }
+
+  // Проверка, что все поля есть
+  if (!body.email || !body.fullName || !body.password) {
+    return NextResponse.json({ message: "Пожалуйста, заполните все поля" }, { status: 400 });
+  }
+
+  try {
     // Проверяем существующего пользователя
     const existingUser = await prisma.user.findFirst({
       where: { email: body.email },
