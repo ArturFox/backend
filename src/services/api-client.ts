@@ -7,6 +7,10 @@ import * as allFillters from './all-fillters';
 
 import * as products from './product-id';
 
+import * as setPostComment from './post-comment';
+
+import * as allComments from './all-comments';
+
 
 
 export const Api = {
@@ -14,4 +18,6 @@ export const Api = {
   book,
   allFillters,
   products,
+  setPostComment,
+  allComments,
 };

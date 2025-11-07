@@ -1,11 +1,25 @@
 "use client"
 
-import { MainBooks } from "@/main-books/main-books";
-import { MainTopBar } from "@/main-books/top-bar";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { MainFillter } from "@/main-books/main-fillter";
+
 import { useFlagTopBarStore } from "@/store/flag-top-bar";
+import { WordList } from "@/semantics/rr";
+
+
+  const words = [
+    "яблоко",
+    "банан",
+    "апельсин",
+    "киви",
+    "виноград",
+    "манго",
+    "персик",
+    "груша",
+    "арбуз",
+    "слива",
+  ];
+
 
 export default function Home() {
   
@@ -43,7 +57,7 @@ export default function Home() {
         transition={{ duration: 0.4, ease: "easeInOut" }}
       >
 
-        <MainTopBar />
+        
 
       </motion.nav>)
       }
@@ -51,14 +65,19 @@ export default function Home() {
       <section className="flex gap-[1.5rem]">
 
         <aside className="sticky top-[1rem] self-start p-[1rem] border-[0.5rem] border-white rounded-lg bg-white flex-1">
-          <MainFillter/>
+          
         </aside>
 
         <section className="px-[1rem] pb-[1rem] border-[0.5rem] border-white rounded-lg bg-white flex-[5]">
-          <MainBooks/>
+          
         </section>
 
       </section>
+
+
+      <div>
+        <WordList words={words}/>
+      </div>
 
     </main>
   );

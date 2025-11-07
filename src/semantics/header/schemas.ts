@@ -83,7 +83,9 @@ export const newPassword = z.object({
 });
 
 
-
+export const commentSchema = z.object({
+  content: z.string().min(1, "Комментарий не может быть пустым"),
+});
 
 
 export type TloginZod = z.infer<typeof loginZod>;
@@ -91,3 +93,4 @@ export type TregisterZod = z.infer<typeof registerZod>;
 export type TconfirmZod = z.infer<typeof confirmZod>;
 export type TfogotZod = z.infer<typeof fogotZod>;
 export type TnewPassword = z.infer<typeof newPassword>;
+export type TcommentSchema = z.infer<typeof commentSchema>;

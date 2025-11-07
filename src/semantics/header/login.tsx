@@ -34,13 +34,17 @@ export const LoginM = () => {
             });
 
             if(!reso?.ok){
-                return toast.error('Неверный E-Mail или пароль', {icon: '❌'});
+            if(reso?.error){
+                return toast.error(reso.error)
+            } else{
+return toast.error('Неверный E-Mail или пароль', {icon: '❌'});
             }
+        }
 
-            if(reso.ok){
-                toast.success('Вы успешно вошли', {icon: '✅'});
-                setflagDialog(!flagDialog);
-            }
+            
+            toast.success('Вы успешно вошли', {icon: '✅'});
+            setflagDialog(!flagDialog);
+            
 
         } catch(e){
             toast.error('Не удалось войти', {
